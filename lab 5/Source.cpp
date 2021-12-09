@@ -83,32 +83,6 @@ int main() {
 
 
 
-
-
-
-
-
-	// 2 fast for benching (
-	//std::cout << "Test 3 (benchmark)\n\n";
-
-	//std::cout << "input XTRA large number of intervals: ";
-	//DOUBLE t3_n;	// cant be pre set cos compiler will calculate all during compiling 
-	//std::cin >> t3_n;
-
-	//auto time_start = GetTickCount64();
-	//std::cout << "wait...";
-
-	//std::cout << "Benchmark time: " << t1_l << GetTickCount64() - time_start << " ms\n";
-	//const auto t3_res = Integral(f, a, b, INTERVAL_LEN(t3_n));
-	//std::cout << " Ih = " << t3_res;
-	//std::cout << "\n\n\n";
-
-
-
-
-
-
-
 	_getch();
 	return 0;
 
