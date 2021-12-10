@@ -55,7 +55,25 @@ enum integral_formula {
 
 
 // Base big value class
-class _DOUBLE_VALUE_;
+class _DOUBLE_VALUE_ {
+
+	/*
+	*	Using as parent for intergral param types
+	*/
+
+public:
+
+	DOUBLE v;
+
+public:
+
+	_DOUBLE_VALUE_() : v(0) {}
+	_DOUBLE_VALUE_(DOUBLE value) noexcept : v(value) {}
+	_DOUBLE_VALUE_(const _DOUBLE_VALUE_& _double_value_) noexcept : v(_double_value_.v) {}
+	_DOUBLE_VALUE_(_DOUBLE_VALUE_&& _double_value_) noexcept : v(_double_value_.v) { _double_value_.v = 0; }
+	~_DOUBLE_VALUE_() = default;
+
+};
 
 
 // Lenth of interval param
@@ -112,29 +130,6 @@ std::string Exception_Str(Err err) {
 class UnexpectedIntegralFunction;
 
 
-
-
-
-// _DOUBLE_VALUE_ class defenition
-class _DOUBLE_VALUE_ {
-
-	/*
-	*	Using as parent for intergral param types
-	*/
-
-public:
-
-	DOUBLE v;
-
-public:
-
-	_DOUBLE_VALUE_() : v(0) {}
-	_DOUBLE_VALUE_(DOUBLE value) noexcept : v(value) {}
-	_DOUBLE_VALUE_(const _DOUBLE_VALUE_& _double_value_) noexcept : v(_double_value_.v) {}
-	_DOUBLE_VALUE_(_DOUBLE_VALUE_&& _double_value_) noexcept : v(_double_value_.v) { _double_value_.v = 0; }
-	~_DOUBLE_VALUE_() = default;
-
-};
 
 // UnexpectedIntegralFunction class definition
 class UnexpectedIntegralFunction {

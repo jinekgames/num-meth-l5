@@ -11,7 +11,10 @@
 
 
 
+#include <valarray>
+
 #include "Integral.h"
+
 
 
 #ifdef _DEBUG
@@ -126,6 +129,113 @@ DOUBLE IntegralSymp(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 }
 
 
+struct g_weigth {
+	const DOUBLE x;
+	const DOUBLE c;
+};
+
+// table of weigths for Gaussian integral
+const struct g_weight_table {
+
+	struct i_vec {
+
+		const std::valarray<g_weigth> i;
+
+	};
+
+	const std::valarray<i_vec> n;
+	const size_t size;
+
+};
+
+g_weight_table _g_weight_table{
+
+	{{
+		{{
+			{    0.0,            2.0           }
+		}},
+		{{
+			{    -0.5773503,     1.0           },
+			{    0.5773503,      1.0           },
+		}},
+		{{
+			{    -0.7745967,     0.5555556     },
+			{    0.0,            0.8888889     },
+			{    0.7745967,      0.5555556     },
+		}},
+		{{
+			{    -0.8611363,     0.3478548     },
+			{    -0.3399810,     0.6521451     },
+			{    0.3399810,      0.6521451     },
+			{    0.8611363,      0.3478548     },
+		}},
+		{{
+			{    -0.9061798,     0.4786287     },
+			{    -0.5384693,     0.2369269     },
+			{    0.0,            0.5688888     },
+			{    0.5384693,      0.2369269     },
+			{    0.9061798,      0.4786287     },
+		}},
+		{{
+			{    -0.9324700,     0.1713245     },
+			{    -0.6612094,     0.3607616     },
+			{    -0.2386142,     0.4679140     },
+			{    0.2386142,      0.4679140     },
+			{    0.6612094,      0.3607616     },
+			{    0.9324700,      0.1713245     },
+		}},
+	}},
+
+	6u
+
+};
+
+g_weigth _GetGweigth(size_t n, size_t i) {
+
+	return _g_weight_table.n[n].i[i];
+
+}
+g_weigth s_GetGweigth(size_t n, size_t i) {
+
+	if (n > _g_weight_table.size) {
+		throw "Integral.cpp Integral_jnk::g_weigth Integral_jnk::s_GetGweigth(size_t, size_t) error: i > table size";
+	}
+	if (i > n) {
+		throw "Integral.cpp Integral_jnk::g_weigth Integral_jnk::s_GetGweigth(size_t, size_t) error: i > n limit";
+	}
+	return _g_weight_table.n[n].i[i];
+
+}
+
+
+DOUBLE IntegralGaus(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
+
+#ifdef _DEBUG
+	std::cout << "Integral Gaussian function start (param = interval number)" << std::endl;
+#endif // _DEBUG
+
+	size_t iNum = p.v;
+
+	const DOUBLE A = (b - a) / 2;
+	const DOUBLE B = (b + a) / 2;
+
+	// integral calculated value
+	DOUBLE i = 0.0;
+
+
+	for (size_t index = 1u; index <= iNum; index++) {
+
+		auto w = s_GetGweigth(iNum, index);
+
+		i += w.c * f(B + A * w.x);
+
+	}
+
+	return i * A;
+
+}
+
+
 
 DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral_formula v) {
 
@@ -137,6 +247,10 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral
 
 	case integral_formula::SYMPSON: {
 		return IntegralSymp(f, a, b, p);
+	} break;
+
+	case integral_formula::GAUSS: {
+		return IntegralGaus(f, a, b, p);
 	} break;
 
 	default : {
@@ -157,6 +271,10 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral
 
 	case integral_formula::SYMPSON: {
 		return IntegralSymp(f, a, b, p);
+	} break;
+
+	case integral_formula::GAUSS: {
+		throw UnexpectedIntegralFunction{ "Gaussian type of integral couldn;t be calculated using interval legth param" };
 	} break;
 
 	default: {
