@@ -29,12 +29,6 @@ using namespace Integral_jnk;
 
 
 
-// Get error value
-#define GET_DELTA(res) \
-	abs(res - tru_res)
-
-
-
 int main() {
 
 
@@ -53,7 +47,7 @@ int main() {
 
 
 	std::cout << "Intergal calculation using trapeze meth\n" <<
-		"Correct value calculated on paper by myself\n: " << tru_res <<
+		"Correct precalculated value\n I = " << precalculates <<
 		"\n\n\n";
 
 
@@ -63,7 +57,7 @@ int main() {
 
 	size_t k = t1_n;
 	for (size_t index = 0u; index < 4; index++) {
-		const auto i = Integral(f, a, b, INTERVAL_NUM(k));
+		const auto i = Integral(f, a, b, INTERVAL_NUM(k), TRAPEZE);
 		t1_res.push_back(i);
 		std::cout << " Ih (" << k << ") = " << i << "\n";
 		std::cout << "  \t\terror: " << GET_DELTA(i) << "\n";
@@ -76,18 +70,18 @@ int main() {
 
 	std::cout << "Test 2\n\n";
 
-	const auto t2_res1 = Integral(f, a, b, INTERVAL_LEN(t2_l));
+	const auto t2_res1 = Integral(f, a, b, INTERVAL_LEN(t2_l), TRAPEZE);
 	std::cout << " Ih (" << t2_l << ") = " << t2_res1 << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_res1);
 
-	const auto t2_res2 = Integral(f, a, b, INTERVAL_LEN(t2_l / 2));
+	const auto t2_res2 = Integral(f, a, b, INTERVAL_LEN(t2_l / 2), TRAPEZE);
 	std::cout << "\n Ih (" << t2_l / 2 << ") = " << t2_res2 << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_res2);
 
 	const DOUBLE del = t2_l / 2;
-	const auto t2_res3 = Integral(f, a + del, b - del, INTERVAL_LEN(t2_l));
+	const auto t2_res3 = Integral(f, a + del, b - del, INTERVAL_LEN(t2_l), TRAPEZE);
 	const auto t2_resf = (t2_res2 + t2_res2) / 2;
-	std::cout << "\n Ih (calculated from 2 iterations) t= " << t2_resf << "\n";
+	std::cout << "\n Ih (calculated from 2 iterations) = " << t2_resf << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_resf);
 
 	std::cout << "\n\n\n";
@@ -165,9 +159,7 @@ int main() {
 #ifdef PART_3
 
 
-	std::cout << "Intergal calculation using trapeze meth\n" <<
-	"Correct value calculated on paper by myself\n: " << tru_res <<
-	"\n\n\n";
+	//
 
 
 #endif // PART_3

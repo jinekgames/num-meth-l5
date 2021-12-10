@@ -57,7 +57,12 @@ const DOUBLE t2_l = 0.25;
 
 
 // Solved integral true result
-const DOUBLE tru_res = 333.333333333333333333333333333333333333333333333333333333333333333333333333;
+const DOUBLE precalculates = 333.333333333333333333333333333333333333333333333333333333333333333333333333;
+
+
+// Get error value
+#define GET_DELTA(res) \
+	abs(res - precalculates)
 
 #endif // PART_1
 
