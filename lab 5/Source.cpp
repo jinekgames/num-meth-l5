@@ -159,7 +159,22 @@ int main() {
 #ifdef PART_3
 
 
+	std::cout << "\n\n-----Sympson formula------\n\n\n";
 
+	for (const auto& function : funcs) {
+		std::cout << "\tnext function\n\n";
+		for (auto n : N) {
+
+			auto i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), GAUSS);
+
+			std::cout << "n = " << n << std::endl;
+			std::cout << " I = " << function.precalculated << std::endl;
+			std::cout << " Ih = " << i << std::endl;
+			std::cout << " del = " << abs(function.precalculated - i) << std::endl;
+
+		}
+		std::cout << std::endl << std::endl;
+	}
 
 
 #endif // PART_3

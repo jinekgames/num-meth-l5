@@ -24,7 +24,16 @@
 #include "jnkMath.h"
 
 
-#define PART_2
+#define PART_3
+
+
+
+struct data2solve {
+	DOUBLE(*f)(DOUBLE);
+	DOUBLE a, b;
+	DOUBLE precalculated;
+};
+
 
 
 #ifdef PART_1
@@ -64,6 +73,8 @@ const DOUBLE precalculates = 333.33333333333333333333333333333333333333333333333
 #define GET_DELTA(res) \
 	abs(res - precalculates)
 
+
+
 #endif // PART_1
 
 #ifdef PART_2
@@ -82,12 +93,6 @@ DOUBLE f2(DOUBLE x) {
 	return sin(PI * x);
 }
 
-struct data2solve {
-	DOUBLE(*f)(DOUBLE);
-	DOUBLE a, b;
-	DOUBLE precalculated;
-};
-
 // Functions with params 2 calculate
 const std::vector<data2solve> functions{
 	{ f1, 0.0, 1.0, 0.33333333333333333333333 },
@@ -96,7 +101,32 @@ const std::vector<data2solve> functions{
 
 
 
-#endif // PART_1
+#endif // PART_2
+
+#ifdef PART_3
+
+#define L 9
+
+std::vector<data2solve> funcs{
+	{
+		[](DOUBLE x) { return L + jnkMath::degree(x - L, 7); },
+		L,	L + 1,
+		9.125
+	},
+	{
+		[](DOUBLE x) { return L + jnkMath::degree(x - L, 10); },
+		L,	L + 4,
+		381'336.36363
+	},
+};
+
+std::vector<size_t> N{ 1u, 2, 3, 4, 5 };
+
+
+
+#endif // PART_3
+
+
 
 
 
