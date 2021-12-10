@@ -2,6 +2,16 @@
 *
 *	Main.cpp
 *	Test of Integral module
+* 
+*	To change params please open Params.h
+*	Also U ARE TO set which of 3 parts of test to run
+*	e.g.	> #define PART_2
+*	it had already beed defined in the header right after includes
+*	just need to writhe number
+*	U can also define every of 3 PARTs to run 3 test at once
+* 
+*	Please read Integral.h description to understand ho library api work
+*	(recommend to choose RELEASE solution property)
 *
 * 
 *	https://github.com/jinekgames
@@ -159,7 +169,7 @@ int main() {
 #ifdef PART_3
 
 
-	std::cout << "\n\n-----Sympson formula------\n\n\n";
+	std::cout << "\n\n-----Gaussian formula------\n\n\n";
 
 	for (const auto& function : funcs) {
 		std::cout << "\tnext function\n\n";
@@ -175,6 +185,28 @@ int main() {
 		}
 		std::cout << std::endl << std::endl;
 	}
+
+
+	std::cout << "\n\n-Gaussian composite formula-\n\n\n";
+
+	std::cout << "\tnext function\n\n";
+	DOUBLE m = 1.0;
+	DOUBLE prev_i = 0.0;
+	for (auto deg = 0u; deg <= M_MAX_DEG; deg++) {
+
+		auto i = Integral(f3p2.f, f3p2.a, f3p2.b, INTERVAL_NUM(m), GAUSS_MAX);
+
+		std::cout << "m = " << m << std::endl;
+		std::cout << " I = " << f3p2.precalculated << std::endl;
+		std::cout << " Ih = " << i << std::endl;
+		std::cout << " del = " << abs(f3p2.precalculated - i) << std::endl;
+		std::cout << " err  = " << RUNGE_ROOL(prev_i, i) << std::endl;
+
+		prev_i = i;
+		m *= 2.0;
+
+	}
+	std::cout << std::endl << std::endl;
 
 
 #endif // PART_3

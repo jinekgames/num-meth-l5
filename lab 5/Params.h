@@ -1,7 +1,7 @@
 /*
 *
 *	Params.h
-*	Recompiling params for Test
+*	Recompiling params for Test in 1 place2optimize compiling
 *
 *
 *	https://github.com/jinekgames
@@ -24,7 +24,7 @@
 #include "jnkMath.h"
 
 
-#define PART_3
+#define PART_
 
 
 
@@ -33,6 +33,10 @@ struct data2solve {
 	DOUBLE a, b;
 	DOUBLE precalculated;
 };
+
+// Error value by Runge
+#define RUNGE_ROOL(ih, ih_2) \
+	abs((ih - ih_2) / 3)
 
 
 
@@ -82,10 +86,6 @@ const DOUBLE precalculates = 333.33333333333333333333333333333333333333333333333
 // Epsilon values
 const std::vector<DOUBLE> E{ 5e-4, 5e-5, 5e-6 };
 
-// Error value by Runge
-#define RUNGE_ROOL(ih, ih_2) \
-	abs((ih - ih_2) / 3)
-
 DOUBLE f1(DOUBLE x) {
 	return x * x;
 }
@@ -121,6 +121,17 @@ std::vector<data2solve> funcs{
 };
 
 std::vector<size_t> N{ 1u, 2, 3, 4, 5 };
+
+
+#define M_MAX_DEG 4u
+
+data2solve f3p2{
+	[](DOUBLE x) { return sin(x); },
+	0, 15,
+	1.7596879128
+};
+
+
 
 
 
