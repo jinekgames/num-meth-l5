@@ -9,9 +9,11 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Integral">
+      <UniqueIdentifier>{ab01d137-58af-45df-94c0-80b0804428aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jnkMath">
+      <UniqueIdentifier>{cd0d0c54-0d57-4d11-878f-c8c2bfae8ee8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -19,15 +21,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Integral.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Integral</Filter>
+    </ClCompile>
+    <ClCompile Include="jnkMath.cpp">
+      <Filter>jnkMath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Integral.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Params.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Integral.h">
+      <Filter>Integral</Filter>
+    </ClInclude>
+    <ClInclude Include="jnkMath.h">
+      <Filter>jnkMath</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

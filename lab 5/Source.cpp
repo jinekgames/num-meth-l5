@@ -29,20 +29,25 @@ using namespace Integral_jnk;
 
 
 
-// Get error value
-#define GET_DELTA(res) \
-	abs(res - tru_res)
-
-
-
 int main() {
+
+
+	//std::cout << Integral(
+	//	[](DOUBLE x) { return x * x * x; },
+	//	0, 10,
+	//	INTERVAL_NUM(1000),
+	//	SYMPSON
+	//) << std::endl;
+
+
+#ifdef PART_1
 
 	// std::cout << Integral(f, 1, 2, INTERVAL_NUM(1)) << std::endl;
 
 
 
 	std::cout << "Intergal calculation using trapeze meth\n" <<
-		"Correct value calculated on paper by myself\n: " << tru_res <<
+		"Correct precalculated value\n I = " << precalculates <<
 		"\n\n\n";
 
 
@@ -52,7 +57,7 @@ int main() {
 
 	size_t k = t1_n;
 	for (size_t index = 0u; index < 4; index++) {
-		const auto i = Integral(f, a, b, INTERVAL_NUM(k));
+		const auto i = Integral(f, a, b, INTERVAL_NUM(k), TRAPEZE);
 		t1_res.push_back(i);
 		std::cout << " Ih (" << k << ") = " << i << "\n";
 		std::cout << "  \t\terror: " << GET_DELTA(i) << "\n";
@@ -65,53 +70,117 @@ int main() {
 
 	std::cout << "Test 2\n\n";
 
-	const auto t2_res1 = Integral(f, a, b, INTERVAL_LEN(t2_l));
+	const auto t2_res1 = Integral(f, a, b, INTERVAL_LEN(t2_l), TRAPEZE);
 	std::cout << " Ih (" << t2_l << ") = " << t2_res1 << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_res1);
 
-	const auto t2_res2 = Integral(f, a, b, INTERVAL_LEN(t2_l/2));
-	std::cout << "\n Ih (" << t2_l/2 << ") = " << t2_res2 << "\n";
+	const auto t2_res2 = Integral(f, a, b, INTERVAL_LEN(t2_l / 2), TRAPEZE);
+	std::cout << "\n Ih (" << t2_l / 2 << ") = " << t2_res2 << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_res2);
 
 	const DOUBLE del = t2_l / 2;
-	const auto t2_res3 = Integral(f, a + del, b - del, INTERVAL_LEN(t2_l));
+	const auto t2_res3 = Integral(f, a + del, b - del, INTERVAL_LEN(t2_l), TRAPEZE);
 	const auto t2_resf = (t2_res2 + t2_res2) / 2;
-	std::cout << "\n Ih (calculated from 2 iterations) t= " << t2_resf << "\n";
+	std::cout << "\n Ih (calculated from 2 iterations) = " << t2_resf << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_resf);
 
 	std::cout << "\n\n\n";
 
 
+#endif // PART_1
+
+#ifdef PART_2
+
+	std::cout << "-----Trapeze formula------\n\n\n";
+
+	for (const auto& function : functions) {
+		std::cout << "\tnext function\n\n";
+		for (auto eps : E) {
+
+			ULONG n = 1u;
+			auto cur_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), TRAPEZE);
+			DOUBLE del;
+			while (TRUE) {
+				DOUBLE shift = (function.a - function.b) / n / 2;
+				auto next_i = (Integral(function.f, function.a + shift, function.b - shift, INTERVAL_NUM(n), TRAPEZE) + cur_i) / 2;
+				n *= 2u;
+				del = RUNGE_ROOL(cur_i, next_i);
+				if (del < eps) {
+					cur_i = next_i;
+					break;
+				}
+				cur_i = next_i;
+			}
+
+			std::cout << "E = " << eps << std::endl;
+			std::cout << " I = " << function.precalculated << std::endl;
+			std::cout << " Ih = " << cur_i << std::endl;
+			std::cout << " del = " << del << std::endl;
+			std::cout << " n = " << n << std::endl << std::endl;
+
+		}
+		std::cout << std::endl << std::endl;
+	}
 
 
+	std::cout << "\n\n-----Sympson formula------\n\n\n";
+
+	for (const auto& function : functions) {
+		std::cout << "\tnext function\n\n";
+		for (auto eps : E) {
+
+			ULONG n = 3u;
+			auto cur_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), SYMPSON);
+			DOUBLE del;
+			while (TRUE) {
+				n *= 2u;
+				auto next_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), SYMPSON);
+				del = RUNGE_ROOL(cur_i, next_i);
+				if (del < eps) {
+					cur_i = next_i;
+					break;
+				}
+				cur_i = next_i;
+	}
+
+			std::cout << "E = " << eps << std::endl;
+			std::cout << " I = " << function.precalculated << std::endl;
+			std::cout << " Ih = " << cur_i << std::endl;
+			std::cout << " del = " << del << std::endl;
+			std::cout << " n = " << n << std::endl << std::endl;
+
+}
+		std::cout << std::endl << std::endl;
+	}
 
 
+#endif // PART_2
+
+#ifdef PART_3
 
 
-	// 2 fast for benching (
-	//std::cout << "Test 3 (benchmark)\n\n";
+	std::cout << "\n\n-----Sympson formula------\n\n\n";
 
-	//std::cout << "input XTRA large number of intervals: ";
-	//DOUBLE t3_n;	// cant be pre set cos compiler will calculate all during compiling 
-	//std::cin >> t3_n;
+	for (const auto& function : funcs) {
+		std::cout << "\tnext function\n\n";
+		for (auto n : N) {
 
-	//auto time_start = GetTickCount64();
-	//std::cout << "wait...";
+			auto i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), GAUSS);
 
-	//std::cout << "Benchmark time: " << t1_l << GetTickCount64() - time_start << " ms\n";
-	//const auto t3_res = Integral(f, a, b, INTERVAL_LEN(t3_n));
-	//std::cout << " Ih = " << t3_res;
-	//std::cout << "\n\n\n";
+			std::cout << "n = " << n << std::endl;
+			std::cout << " I = " << function.precalculated << std::endl;
+			std::cout << " Ih = " << i << std::endl;
+			std::cout << " del = " << abs(function.precalculated - i) << std::endl;
+
+		}
+		std::cout << std::endl << std::endl;
+	}
 
 
-
-
-
+#endif // PART_3
 
 
 	_getch();
 	return 0;
 
 }
-
-

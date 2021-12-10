@@ -6,10 +6,13 @@
 *	All objests are located in Integral_jnk namespace
 * 
 *	To calculate the integral from A to B of function F(X)
-*	u should call one of Integral(F, A, B, param) functions
+*	u should call one of Integral(F, A, B, param, formula) functions
 *	Where param is value of namespace type
 *	Choose type (e.g. INTERVAL_LEN(0.02))
 *	due to param u wanna use
+*	To choose formula for integral calculation choose appropriate
+*	Integral_jnk::integral_formula value
+*	
 * 
 *	Choose DEBUG build to see console debug info,
 *	choose RELEASE to not
@@ -30,6 +33,12 @@
 
 
 #include <Windows.h>
+#include <string>
+
+
+
+// DEEP_DEBUG for more info, N_DEEP_DEBUG for smaller count
+#define N_DEEP_DEBUG
 
 
 
@@ -37,15 +46,11 @@
 namespace Integral_jnk {
 
 
-// Result of Intergral functions
-struct Solved_integral {
-		
-	// Solved integral value
-	DOUBLE i;
-
-	// Error rate
-	DOUBLE del;
-
+// Formula for intergral calculation
+enum integral_formula {
+	TRAPEZE = 0u,
+	SYMPSON,
+	GAUSS,
 };
 
 
@@ -69,6 +74,7 @@ public:
 	~_DOUBLE_VALUE_() = default;
 
 };
+
 
 // Lenth of interval param
 class INTERVAL_LEN : public _DOUBLE_VALUE_ {
@@ -106,14 +112,33 @@ public:
 
 
 // Prevent using Integral function with unsafe param
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, DOUBLE p) = delete;
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, DOUBLE p, integral_formula) = delete;
 
 
-// Calculate integral for f(DOUBLE) from a to b by trapezes with lenth p
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p);
+// Calculate integral for f(DOUBLE) from a to b by choosen integral formula with p Param
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral_formula);
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral_formula);
 
-// Calculate integral for f(DOUBLE) from a to b by trapezes with p intervals
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p);
+
+// Interpritate exception
+template<class Err>
+std::string Exception_Str(Err err) {
+	return err.text;
+}
+
+// exceptions
+class UnexpectedIntegralFunction;
+
+
+
+// UnexpectedIntegralFunction class definition
+class UnexpectedIntegralFunction {
+	const std::string text;
+public:
+	UnexpectedIntegralFunction(const char* e) : text(e) {}
+	template <class Err>
+	friend std::string Exception_Str(Err);
+};
 
 
 }
