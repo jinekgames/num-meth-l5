@@ -22,12 +22,6 @@
 namespace Integral_jnk {
 
 
-class UnexpectedIntegralFunction {
-public:
-	std::string text;
-};
-
-
 
 DOUBLE IntegralTrap(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 
@@ -145,8 +139,12 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral
 		return IntegralSymp(f, a, b, p);
 	} break;
 
+	case integral_formula::GAUSS: {
+		return IntegralGaus(f, a, b, p);
+	} break;
+
 	default : {
-		throw UnexpectedIntegralFunction{"shit"};
+		throw UnexpectedIntegralFunction{"non - existent intergral formula (check last param)"};
 	}
 	
 	}
@@ -165,8 +163,12 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral
 		return IntegralSymp(f, a, b, p);
 	} break;
 
+	case integral_formula::GAUSS: {
+		throw UnexpectedIntegralFunction{"Gaussian type of integral couldn;t be calculated using interval legth param"};
+	} break;
+
 	default: {
-		throw UnexpectedIntegralFunction{ "shit" };
+		throw UnexpectedIntegralFunction{"non - existent intergral formula (check last param)"};
 	}
 
 	}
