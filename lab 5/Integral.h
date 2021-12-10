@@ -48,9 +48,10 @@ namespace Integral_jnk {
 
 // Formula for intergral calculation
 enum integral_formula {
-	TRAPEZE = 0u,
-	SYMPSON,
-	GAUSS,
+	TRAPEZE = 0u,		// trapezes formula
+	SYMPSON,			// Sympsons formula
+	GAUSS,				// Gaussian formula
+	GAUSS_MAX,			// Gaussian composite formula
 };
 
 

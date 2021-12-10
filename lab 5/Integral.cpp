@@ -42,7 +42,7 @@ DOUBLE IntegralTrap(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 	DOUBLE prev_x = a;
 	DOUBLE cur_x = prev_x;
 
-	while(cur_x < b) {
+	while(cur_x <= b) {
 
 		cur_x = prev_x + iLen;
 		i += (f(prev_x) + f(cur_x)) / 2.0;
@@ -229,9 +229,54 @@ DOUBLE IntegralGaus(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 
 		i += w.c * f(B + A * w.x);
 
+
+#ifdef DEEP_DEBUG
+		std::cout << "cur_n = " << index << std::endl <<
+			"iter I/iLen = " << i << std::endl;
+#endif // DEEP_DEBUG
+
 	}
 
 	return i * A;
+
+}
+
+
+DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
+
+#ifdef _DEBUG
+	std::cout << "Integral Gaussian composite function start (param = interval length)" << std::endl;
+#endif // _DEBUG
+
+	// interval length
+	const DOUBLE iLen = p.v;
+
+	// integral calculated value
+	DOUBLE i = 0.0;
+
+
+	for (; a <= b; a += iLen) {
+
+		i += IntegralGaus(f, a, a + iLen, INTERVAL_NUM(_g_weight_table.size));
+
+	}
+
+	return i * iLen;
+
+}
+
+
+DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
+
+#ifdef _DEBUG
+	std::cout << "Integral Gaussian composite function start (param = interval number)" << std::endl;
+#endif // _DEBUG
+
+
+	// interval length
+	const DOUBLE iLen = (b - a) / p.v;
+
+	return IntegralTrap(f, a, b, INTERVAL_LEN(iLen));
 
 }
 
@@ -251,6 +296,10 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral
 
 	case integral_formula::GAUSS: {
 		return IntegralGaus(f, a, b, p);
+	} break;
+
+	case integral_formula::GAUSS_MAX: {
+		return IntegralGauM(f, a, b, p);
 	} break;
 
 	default : {
@@ -274,7 +323,11 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral
 	} break;
 
 	case integral_formula::GAUSS: {
-		throw UnexpectedIntegralFunction{ "Gaussian type of integral couldn;t be calculated using interval legth param" };
+		throw UnexpectedIntegralFunction{ "Gaussian type of integral couldn't be calculated using interval legth param" };
+	} break;
+
+	case integral_formula::GAUSS_MAX: {
+		return IntegralGauM(f, a, b, p);
 	} break;
 
 	default: {
