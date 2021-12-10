@@ -139,6 +139,8 @@ public:
 // UnexpectedIntegralFunction class definition
 class UnexpectedIntegralFunction {
 	const std::string text;
+public:
+	UnexpectedIntegralFunction(const char* e) : text(e) {}
 	template <class Err>
 	friend std::string Exception_Str(Err);
 };
