@@ -139,10 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="jnkMath.cpp" />
     <ClCompile Include="Integral.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="jnkMath.h" />
     <ClInclude Include="Integral.h" />
     <ClInclude Include="Params.h" />
   </ItemGroup>

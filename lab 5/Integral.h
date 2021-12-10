@@ -30,6 +30,12 @@
 
 
 #include <Windows.h>
+#include <string>
+
+
+
+// DEEP_DEBUG for more info, N_DEEP_DEBUG for smaller count
+#define N_DEEP_DEBUG
 
 
 
@@ -105,15 +111,23 @@ public:
 };
 
 
+enum integral_formula {
+	TRAPEZE,
+	SYMPSON,
+};
+
+
 // Prevent using Integral function with unsafe param
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, DOUBLE p) = delete;
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, DOUBLE p, integral_formula) = delete;
 
 
-// Calculate integral for f(DOUBLE) from a to b by trapezes with lenth p
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p);
+// Calculate integral for f(DOUBLE) from a to b by choosen integral formula with p Param
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral_formula);
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral_formula);
 
-// Calculate integral for f(DOUBLE) from a to b by trapezes with p intervals
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p);
+
+// exceptions
+class UnexpectedIntegralFunction;
 
 
 }

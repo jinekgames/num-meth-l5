@@ -37,6 +37,17 @@ using namespace Integral_jnk;
 
 int main() {
 
+
+	//std::cout << Integral(
+	//	[](DOUBLE x) { return x * x * x; },
+	//	0, 10,
+	//	INTERVAL_NUM(1000),
+	//	SYMPSON
+	//) << std::endl;
+
+
+#ifdef PART_1
+
 	// std::cout << Integral(f, 1, 2, INTERVAL_NUM(1)) << std::endl;
 
 
@@ -69,8 +80,8 @@ int main() {
 	std::cout << " Ih (" << t2_l << ") = " << t2_res1 << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_res1);
 
-	const auto t2_res2 = Integral(f, a, b, INTERVAL_LEN(t2_l/2));
-	std::cout << "\n Ih (" << t2_l/2 << ") = " << t2_res2 << "\n";
+	const auto t2_res2 = Integral(f, a, b, INTERVAL_LEN(t2_l / 2));
+	std::cout << "\n Ih (" << t2_l / 2 << ") = " << t2_res2 << "\n";
 	std::cout << "  \t\terror: " << GET_DELTA(t2_res2);
 
 	const DOUBLE del = t2_l / 2;
@@ -82,10 +93,87 @@ int main() {
 	std::cout << "\n\n\n";
 
 
+#endif // PART_1
+
+#ifdef PART_2
+
+	std::cout << "-----Trapeze formula------\n\n\n";
+
+	for (const auto& function : functions) {
+		std::cout << "\tnext function\n\n";
+		for (auto eps : E) {
+
+			ULONG n = 1u;
+			auto cur_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), TRAPEZE);
+			DOUBLE del;
+			while (TRUE) {
+				DOUBLE shift = (function.a - function.b) / n / 2;
+				auto next_i = (Integral(function.f, function.a + shift, function.b - shift, INTERVAL_NUM(n), TRAPEZE) + cur_i) / 2;
+				n *= 2u;
+				del = RUNGE_ROOL(cur_i, next_i);
+				if (del < eps) {
+					cur_i = next_i;
+					break;
+				}
+				cur_i = next_i;
+			}
+
+			std::cout << "E = " << eps << std::endl;
+			std::cout << " I = " << function.precalculated << std::endl;
+			std::cout << " Ih = " << cur_i << std::endl;
+			std::cout << " del = " << del << std::endl;
+			std::cout << " n = " << n << std::endl << std::endl;
+
+		}
+		std::cout << std::endl << std::endl;
+	}
+
+
+	std::cout << "\n\n-----Sympson formula------\n\n\n";
+
+	for (const auto& function : functions) {
+		std::cout << "\tnext function\n\n";
+		for (auto eps : E) {
+
+			ULONG n = 3u;
+			auto cur_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), SYMPSON);
+			DOUBLE del;
+			while (TRUE) {
+				n *= 2u;
+				auto next_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), SYMPSON);
+				del = RUNGE_ROOL(cur_i, next_i);
+				if (del < eps) {
+					cur_i = next_i;
+					break;
+				}
+				cur_i = next_i;
+	}
+
+			std::cout << "E = " << eps << std::endl;
+			std::cout << " I = " << function.precalculated << std::endl;
+			std::cout << " Ih = " << cur_i << std::endl;
+			std::cout << " del = " << del << std::endl;
+			std::cout << " n = " << n << std::endl << std::endl;
+
+}
+		std::cout << std::endl << std::endl;
+	}
+
+
+#endif // PART_2
+
+#ifdef PART_3
+
+
+	std::cout << "Intergal calculation using trapeze meth\n" <<
+	"Correct value calculated on paper by myself\n: " << tru_res <<
+	"\n\n\n";
+
+
+#endif // PART_3
+
 
 	_getch();
 	return 0;
 
 }
-
-

@@ -22,10 +22,17 @@
 namespace Integral_jnk {
 
 
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
+class UnexpectedIntegralFunction {
+public:
+	std::string text;
+};
+
+
+
+DOUBLE IntegralTrap(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 
 #ifdef _DEBUG
-	std::cout << "Integral function start (param = interval length)" << std::endl;
+	std::cout << "Integral Trapeze function start (param = interval length)" << std::endl;
 #endif // _DEBUG
 
 	// interval length
@@ -46,10 +53,10 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 		prev_x = cur_x;
 
 
-#ifdef _DEBUG
+#ifdef DEEP_DEBUG
 		std::cout << "cur_x = " << prev_x << std::endl <<
 			"iter I/iLen = " << i << std::endl;
-#endif // _DEBUG
+#endif // DEEP_DEBUG
 
 	}
 
@@ -58,19 +65,114 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 }
 
 
-DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
+DOUBLE IntegralTrap(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 
 #ifdef _DEBUG
-	std::cout << "Integral function start (param = interval number)" << std::endl;
+	std::cout << "Integral Trapeze function start (param = interval number)" << std::endl;
 #endif // _DEBUG
 
 
 	// interval length
 	const DOUBLE iLen = (b - a) / p.v;
 
-	return Integral(f, a, b, INTERVAL_LEN(iLen));
+	return IntegralTrap(f, a, b, INTERVAL_LEN(iLen));
 
 }
+
+
+DOUBLE IntegralSymp(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
+
+#ifdef _DEBUG
+	std::cout << "Integral Sympson function start (param = interval length)" << std::endl;
+#endif // _DEBUG
+
+	// interval length
+	const DOUBLE iLen = p.v;
+
+	// integral calculated value
+	DOUBLE i = 0.0;
+
+
+	DOUBLE prev_x = a;
+	DOUBLE cur_x = a + iLen;
+	DOUBLE next_x = a + iLen + iLen;
+
+	while (next_x <= b) {
+
+		i += f(prev_x) + 4*f(cur_x) + f(next_x);
+
+		prev_x = next_x;
+		cur_x += iLen + iLen;
+		next_x += iLen + iLen;
+
+
+#ifdef DEEP_DEBUG
+		std::cout << "cur_x = " << prev_x << std::endl <<
+			"iter I/iLen = " << i << std::endl;
+#endif // DEEP_DEBUG
+
+	}
+
+	return i * iLen / 3.0;
+
+}
+
+
+DOUBLE IntegralSymp(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
+
+#ifdef _DEBUG
+	std::cout << "Integral Sympson function start (param = interval number)" << std::endl;
+#endif // _DEBUG
+
+	// interval length
+	const DOUBLE iLen = (b - a) / p.v;
+
+	return IntegralSymp(f, a, b, INTERVAL_LEN(iLen));
+
+}
+
+
+
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral_formula v) {
+
+	switch (v) {
+
+	case integral_formula::TRAPEZE: {
+		return IntegralTrap(f, a, b, p);
+	} break;
+
+	case integral_formula::SYMPSON: {
+		return IntegralSymp(f, a, b, p);
+	} break;
+
+	default : {
+		throw UnexpectedIntegralFunction{"shit"};
+	}
+	
+	}
+
+}
+
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral_formula v) {
+
+	switch (v) {
+
+	case integral_formula::TRAPEZE: {
+		return IntegralTrap(f, a, b, p);
+	} break;
+
+	case integral_formula::SYMPSON: {
+		return IntegralSymp(f, a, b, p);
+	} break;
+
+	default: {
+		throw UnexpectedIntegralFunction{ "shit" };
+	}
+
+	}
+
+}
+
 
 
 }
