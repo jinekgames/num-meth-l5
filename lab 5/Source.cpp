@@ -22,13 +22,14 @@
 
 
 #include <Windows.h>
-#include "conio.h"
 
+#include "conio.h"
 #include <iostream>
+#include <iomanip>
+
 #include <vector>
 
 #include <math.h>
-
 #include "Integral.h"
 
 #include "Params.h"
@@ -65,7 +66,12 @@ int main() {
 
 	std::vector<DOUBLE> t1_res;
 
-	size_t k = t1_n;
+	//const auto i0 = Integral(f, a, b, INTERVAL_NUM(1), TRAPEZE);
+	//t1_res.push_back(i0);
+	//std::cout << " Ih (" << 1 << ") = " << i0 << "\n";
+	//std::cout << "  \t\terror: " << GET_DELTA(i0) << "\n";
+
+	size_t k = 1;
 	for (size_t index = 0u; index < 4; index++) {
 		const auto i = Integral(f, a, b, INTERVAL_NUM(k), TRAPEZE);
 		t1_res.push_back(i);
@@ -122,10 +128,15 @@ int main() {
 				cur_i = next_i;
 			}
 
+			const INT cor_symb_num = [](DOUBLE d) {
+				INT n = 0;
+				for (; INT(d) == 0; d *= 10.0, n++);
+				return n - 1;
+			} (eps);
 			std::cout << "E = " << eps << std::endl;
 			std::cout << " I = " << function.precalculated << std::endl;
-			std::cout << " Ih = " << cur_i << std::endl;
-			std::cout << " del = " << del << std::endl;
+			std::cout << " Ih = " << std::fixed << std::setprecision(cor_symb_num) << cur_i << std::endl;
+			std::cout << " del = " << std::fixed << std::setprecision(cor_symb_num + 2) << del << std::endl;
 			std::cout << " n = " << n << std::endl << std::endl;
 
 		}
@@ -151,12 +162,17 @@ int main() {
 					break;
 				}
 				cur_i = next_i;
-	}
+			}
 
+			const INT cor_symb_num = [](DOUBLE d) {
+				INT n = 0;
+				for (; INT(d) == 0; d *= 10.0, n++);
+				return n - 1;
+			} (eps);
 			std::cout << "E = " << eps << std::endl;
 			std::cout << " I = " << function.precalculated << std::endl;
-			std::cout << " Ih = " << cur_i << std::endl;
-			std::cout << " del = " << del << std::endl;
+			std::cout << " Ih = " << std::fixed << std::setprecision(cor_symb_num) << cur_i << std::endl;
+			std::cout << " del = " << std::fixed << std::setprecision(cor_symb_num + 2) << del << std::endl;
 			std::cout << " n = " << n << std::endl << std::endl;
 
 }
@@ -173,40 +189,43 @@ int main() {
 
 	for (const auto& function : funcs) {
 		std::cout << "\tnext function\n\n";
+		DOUBLE m = 1.0;
 		for (auto n : N) {
 
-			auto i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), GAUSS);
+			auto i = Integral(function.f, function.a, function.b, INTERVAL_NUM(m), GAUSS);
 
-			std::cout << "n = " << n << std::endl;
+			std::cout << "m = " << m << std::endl;
 			std::cout << " I = " << function.precalculated << std::endl;
 			std::cout << " Ih = " << i << std::endl;
 			std::cout << " del = " << abs(function.precalculated - i) << std::endl;
+
+			m *= 2.0;
 
 		}
 		std::cout << std::endl << std::endl;
 	}
 
 
-	std::cout << "\n\n-Gaussian composite formula-\n\n\n";
+	//std::cout << "\n\n-Gaussian composite formula-\n\n\n";
 
-	std::cout << "\tnext function\n\n";
-	DOUBLE m = 1.0;
-	DOUBLE prev_i = 0.0;
-	for (auto deg = 0u; deg <= M_MAX_DEG; deg++) {
+	//std::cout << "\tnext function\n\n";
+	//DOUBLE m = 1.0;
+	//DOUBLE prev_i = 0.0;
+	//for (auto deg = 0u; deg <= M_MAX_DEG; deg++) {
 
-		auto i = Integral(f3p2.f, f3p2.a, f3p2.b, INTERVAL_NUM(m), GAUSS_MAX);
+	//	auto i = Integral(f3p2.f, f3p2.a, f3p2.b, INTERVAL_NUM(m), GAUSS_MAX);
 
-		std::cout << "m = " << m << std::endl;
-		std::cout << " I = " << f3p2.precalculated << std::endl;
-		std::cout << " Ih = " << i << std::endl;
-		std::cout << " del = " << abs(f3p2.precalculated - i) << std::endl;
-		std::cout << " err  = " << RUNGE_ROOL(prev_i, i) << std::endl;
+	//	std::cout << "m = " << m << std::endl;
+	//	std::cout << " I = " << f3p2.precalculated << std::endl;
+	//	std::cout << " Ih = " << i << std::endl;
+	//	std::cout << " del = " << abs(f3p2.precalculated - i) << std::endl;
+	//	std::cout << " err  = " << RUNGE_ROOL(prev_i, i) << std::endl;
 
-		prev_i = i;
-		m *= 2.0;
+	//	prev_i = i;
+	//	m *= 2.0;
 
-	}
-	std::cout << std::endl << std::endl;
+	//}
+	//std::cout << std::endl << std::endl;
 
 
 #endif // PART_3

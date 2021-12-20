@@ -42,7 +42,7 @@ DOUBLE IntegralTrap(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 	DOUBLE prev_x = a;
 	DOUBLE cur_x = prev_x;
 
-	while(cur_x <= b) {
+	while(cur_x < b) {
 
 		cur_x = prev_x + iLen;
 		i += (f(prev_x) + f(cur_x)) / 2.0;
@@ -197,7 +197,7 @@ g_weigth _GetGweigth(size_t n, size_t i) {
 }
 g_weigth s_GetGweigth(size_t n, size_t i) {
 
-	if (n > _g_weight_table.size) {
+	if (n >= _g_weight_table.size) {
 		throw "Integral.cpp Integral_jnk::g_weigth Integral_jnk::s_GetGweigth(size_t, size_t) error: i > table size";
 	}
 	if (i > n) {
@@ -257,7 +257,7 @@ DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
 
 	for (; a <= b; a += iLen) {
 
-		i += IntegralGaus(f, a, a + iLen, INTERVAL_NUM(_g_weight_table.size));
+		i += IntegralGaus(f, a, a + iLen, INTERVAL_NUM(_g_weight_table.size-1));
 
 	}
 
@@ -276,7 +276,7 @@ DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 	// interval length
 	const DOUBLE iLen = (b - a) / p.v;
 
-	return IntegralTrap(f, a, b, INTERVAL_LEN(iLen));
+	return IntegralGauM(f, a, b, INTERVAL_LEN(iLen));
 
 }
 
