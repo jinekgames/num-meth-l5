@@ -24,7 +24,7 @@
 #include "jnkMath.h"
 
 
-#define PART_
+#define PART_3
 
 
 
@@ -53,7 +53,7 @@ DOUBLE f(DOUBLE x) {
 
 // Edges
 const DOUBLE a = 0.0;
-const DOUBLE b = 10.0;
+const DOUBLE b = 1.0;
 
 
 // Test 1
@@ -70,7 +70,7 @@ const DOUBLE t2_l = 0.25;
 
 
 // Solved integral true result
-const DOUBLE precalculates = 333.333333333333333333333333333333333333333333333333333333333333333333333333;
+const DOUBLE precalculates = 1.0 / 3.0;
 
 
 // Get error value
@@ -120,7 +120,7 @@ std::vector<data2solve> funcs{
 	},
 };
 
-std::vector<size_t> N{ 1u, 2, 3, 4, 5 };
+std::vector<size_t> N{ 1u, 2, 3, };
 
 
 #define M_MAX_DEG 4u
