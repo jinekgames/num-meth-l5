@@ -5,12 +5,19 @@
 
 
 
-#include "windows.h"
+#include <windows.h>
+#include <math.h>
 
 
+#define PI_CONST \
+	acos(-1)
 
-#define PI 3.14159265358979323846264338327950288419716939937510
+const DOUBLE pi_const = acos(-1);
 
+#define E_CONST	\
+	exp(1)
+
+const DOUBLE e_const = exp(1);
 
 
 namespace jnkMath {

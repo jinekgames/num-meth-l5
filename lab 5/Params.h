@@ -24,6 +24,7 @@
 #include "jnkMath.h"
 
 
+#define PART_11
 #define PART_3
 
 
@@ -33,10 +34,6 @@ struct data2solve {
 	DOUBLE a, b;
 	DOUBLE precalculated;
 };
-
-// Error value by Runge
-#define RUNGE_ROOL(ih, ih_2) \
-	abs((ih - ih_2) / 3)
 
 
 
@@ -90,14 +87,19 @@ DOUBLE f1(DOUBLE x) {
 	return x * x;
 }
 DOUBLE f2(DOUBLE x) {
-	return sin(PI * x);
+	return sin(pi_const * x);
+}
+DOUBLE true_if2(DOUBLE x) {
+	return -cos(pi_const * x) / pi_const;
 }
 
 // Functions with params 2 calculate
 const std::vector<data2solve> functions{
-	{ f1, 0.0, 1.0, 0.33333333333333333333333 },
-	{ f2, 0.0, 1.0, 0.6366197723 },
+	{ f1, 0.0, 1.0, 1.0/3 },
+	{ f2, 0.0, 1.0, true_if2(1.0) - true_if2(0.0) },
 };
+
+
 
 
 
@@ -111,16 +113,16 @@ std::vector<data2solve> funcs{
 	{
 		[](DOUBLE x) { return L + jnkMath::degree(x - L, 7); },
 		L,	L + 1,
-		9.125
+		[](DOUBLE x) { return L*x + jnkMath::degree(x - L, 8)/8; }(L + 1) - [](DOUBLE x) { return L*x + jnkMath::degree(x - L, 8)/8; }(L)
 	},
 	{
 		[](DOUBLE x) { return L + jnkMath::degree(x - L, 10); },
 		L,	L + 4,
-		381'336.36363
+		[](DOUBLE x) { return L*x + jnkMath::degree(x - L, 11)/11; }(L + 4) - [](DOUBLE x) { return L*x + jnkMath::degree(x - L, 11)/11; }(L)
 	},
 };
 
-std::vector<size_t> N{ 1u, 2, 3, };
+std::vector<size_t> N{ 1u, 2, 3, 4, 5, 10, 100 };
 
 
 #define M_MAX_DEG 4u

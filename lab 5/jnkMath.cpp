@@ -66,5 +66,5 @@ USHORT jnkMath::DigitAfterPoINT(DOUBLE number) {
 }
 
 DOUBLE jnkMath::Grad2Rad(DOUBLE phi) {
-    return phi * PI / 180.0;
+    return phi * pi_const / 180.0;
 }

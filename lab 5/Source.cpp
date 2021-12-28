@@ -113,20 +113,31 @@ int main() {
 		std::cout << "\tnext function\n\n";
 		for (auto eps : E) {
 
+			//
+			static auto i_ex = 1u;
+
 			ULONG n = 1u;
 			auto cur_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), TRAPEZE);
 			DOUBLE del;
 			while (TRUE) {
-				DOUBLE shift = (function.a - function.b) / n / 2;
-				auto next_i = (Integral(function.f, function.a + shift, function.b - shift, INTERVAL_NUM(n), TRAPEZE) + cur_i) / 2;
+				DOUBLE shift = (function.b - function.a) / n / 2;
 				n *= 2u;
-				del = RUNGE_ROOL(cur_i, next_i);
+				//auto next_i1 = Integral(function.f, function.a + shift, function.b - shift, INTERVAL_NUM(n), TRAPEZE);
+				auto next_i = Integral(function.f, function.a /*+ shift*/, function.b /*- shift*/, INTERVAL_NUM(n), TRAPEZE);
+				del = RUNGE_ROOL_TRAP(cur_i, next_i);
+				std::cout << "I_h(" << n << ") = " << next_i << std::endl;
 				if (del < eps) {
 					cur_i = next_i;
 					break;
 				}
+				//if (n > i_ex) {
+				//	break;
+				//}
 				cur_i = next_i;
 			}
+
+			//
+			i_ex *= 2u;
 
 			const INT cor_symb_num = [](DOUBLE d) {
 				INT n = 0;
@@ -154,13 +165,15 @@ int main() {
 			auto cur_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), SYMPSON);
 			DOUBLE del;
 			while (TRUE) {
-				n *= 2u;
+				//n *= 2u;
 				auto next_i = Integral(function.f, function.a, function.b, INTERVAL_NUM(n), SYMPSON);
-				del = RUNGE_ROOL(cur_i, next_i);
+				del = RUNGE_ROOL_SYMP(cur_i, next_i);
+				std::cout << "I_h(" << n/3 << ") = " << next_i << std::endl;
 				if (del < eps) {
 					cur_i = next_i;
 					break;
 				}
+				n *= 2u;
 				cur_i = next_i;
 			}
 
@@ -187,14 +200,23 @@ int main() {
 
 	std::cout << "\n\n-----Gaussian formula------\n\n\n";
 
+	// number of dots on ech gauss interval
+	const USHORT dotsNum = 3u;
+	std::cout << "Number of dots on interval: " << dotsNum << "\n\n";
+
 	for (const auto& function : funcs) {
 		std::cout << "\tnext function\n\n";
 		DOUBLE m = 1.0;
 		for (auto n : N) {
 
-			auto i = Integral(function.f, function.a, function.b, INTERVAL_NUM(m), GAUSS);
+			auto i = Integral(
+				function.f,
+				function.a, function.b,
+				GAUSS_PARAM(n, dotsNum),
+				GAUSS
+			);
 
-			std::cout << "m = " << m << std::endl;
+			std::cout << "h = " << n << std::endl;
 			std::cout << " I = " << function.precalculated << std::endl;
 			std::cout << " Ih = " << i << std::endl;
 			std::cout << " del = " << abs(function.precalculated - i) << std::endl;
@@ -204,28 +226,6 @@ int main() {
 		}
 		std::cout << std::endl << std::endl;
 	}
-
-
-	//std::cout << "\n\n-Gaussian composite formula-\n\n\n";
-
-	//std::cout << "\tnext function\n\n";
-	//DOUBLE m = 1.0;
-	//DOUBLE prev_i = 0.0;
-	//for (auto deg = 0u; deg <= M_MAX_DEG; deg++) {
-
-	//	auto i = Integral(f3p2.f, f3p2.a, f3p2.b, INTERVAL_NUM(m), GAUSS_MAX);
-
-	//	std::cout << "m = " << m << std::endl;
-	//	std::cout << " I = " << f3p2.precalculated << std::endl;
-	//	std::cout << " Ih = " << i << std::endl;
-	//	std::cout << " del = " << abs(f3p2.precalculated - i) << std::endl;
-	//	std::cout << " err  = " << RUNGE_ROOL(prev_i, i) << std::endl;
-
-	//	prev_i = i;
-	//	m *= 2.0;
-
-	//}
-	//std::cout << std::endl << std::endl;
 
 
 #endif // PART_3

@@ -51,7 +51,7 @@ enum integral_formula {
 	TRAPEZE = 0u,		// trapezes formula
 	SYMPSON,			// Sympsons formula
 	GAUSS,				// Gaussian formula
-	GAUSS_MAX,			// Gaussian composite formula
+	//GAUSS_MAX,			// Gaussian composite formula
 };
 
 
@@ -89,6 +89,7 @@ public:
 	INTERVAL_LEN() = delete;
 	INTERVAL_LEN(DOUBLE value) noexcept : _DOUBLE_VALUE_(value) {}
 	INTERVAL_LEN(const INTERVAL_LEN& _interval_len_) noexcept : _DOUBLE_VALUE_(_interval_len_) {}
+	INTERVAL_LEN(const _DOUBLE_VALUE_& _lf_value_) noexcept : _DOUBLE_VALUE_(_lf_value_) {}
 	INTERVAL_LEN(INTERVAL_LEN&& _interval_len_) noexcept : _DOUBLE_VALUE_(_interval_len_) { _interval_len_.v = 0; }
 	~INTERVAL_LEN() = default;
 
@@ -105,11 +106,35 @@ public:
 
 	INTERVAL_NUM() = delete;
 	INTERVAL_NUM(DOUBLE value) : _DOUBLE_VALUE_(value) {}
+	INTERVAL_NUM(const _DOUBLE_VALUE_& _lf_value_) noexcept : _DOUBLE_VALUE_(_lf_value_) {}
 	INTERVAL_NUM(const INTERVAL_NUM& _interval_num_) noexcept : _DOUBLE_VALUE_(_interval_num_) {}
 	INTERVAL_NUM(INTERVAL_NUM&& _interval_num_) noexcept : _DOUBLE_VALUE_(_interval_num_) { _interval_num_.v = 0; }
 	~INTERVAL_NUM() = default;
 
 };
+
+// Number of intervals and number of dots on each interval params
+class GAUSS_PARAM {
+
+	/*
+	*	Using as intergral function param as number of intervals to calculate
+	*/
+
+public:
+
+	_DOUBLE_VALUE_ i_num;
+	_DOUBLE_VALUE_ d_num;
+
+public:
+
+	GAUSS_PARAM() = delete;
+	GAUSS_PARAM(DOUBLE intervals_num, DOUBLE dots_num) : i_num(intervals_num), d_num(dots_num) {}
+	GAUSS_PARAM(const GAUSS_PARAM& _t_) noexcept : i_num(_t_.i_num), d_num(_t_.d_num) {}
+	GAUSS_PARAM(GAUSS_PARAM&& _t_) noexcept : i_num(_t_.i_num), d_num(_t_.d_num) { _t_.i_num.v = 0; _t_.d_num.v = 0; }
+	~GAUSS_PARAM() = default;
+
+};
+
 
 
 // Prevent using Integral function with unsafe param
@@ -119,6 +144,16 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, DOUBLE p, integral_formu
 // Calculate integral for f(DOUBLE) from a to b by choosen integral formula with p Param
 DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral_formula);
 DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral_formula);
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, GAUSS_PARAM p, integral_formula);
+
+
+// Error value by Runge for trap formula
+#define RUNGE_ROOL_TRAP(ih, ih_2) \
+	abs((ih - ih_2) / 3)
+
+// Error value by Runge for symp formula
+#define RUNGE_ROOL_SYMP(ih, ih_2) \
+	abs((ih - ih_2) / 15)
 
 
 // Interpritate exception

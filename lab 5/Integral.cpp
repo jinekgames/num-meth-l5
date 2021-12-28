@@ -135,7 +135,7 @@ struct g_weigth {
 };
 
 // table of weigths for Gaussian integral
-const struct g_weight_table {
+struct g_weight_table {
 
 	struct i_vec {
 
@@ -148,7 +148,7 @@ const struct g_weight_table {
 
 };
 
-g_weight_table _g_weight_table{
+const g_weight_table _g_weight_table{
 
 	{{
 		{{
@@ -203,7 +203,7 @@ g_weigth s_GetGweigth(size_t n, size_t i) {
 	if (i > n) {
 		throw "Integral.cpp Integral_jnk::g_weigth Integral_jnk::s_GetGweigth(size_t, size_t) error: i > n limit";
 	}
-	return _g_weight_table.n[n].i[i];
+	return _g_weight_table.n[n-1].i[i-1];
 
 }
 
@@ -216,8 +216,8 @@ DOUBLE IntegralGaus(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 
 	size_t iNum = p.v;
 
-	const DOUBLE A = (b - a) / 2;
-	const DOUBLE B = (b + a) / 2;
+	const DOUBLE A = (b - a) / 2.0;
+	const DOUBLE B = (b + a) / 2.0;
 
 	// integral calculated value
 	DOUBLE i = 0.0;
@@ -226,8 +226,9 @@ DOUBLE IntegralGaus(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 	for (size_t index = 1u; index <= iNum; index++) {
 
 		auto w = s_GetGweigth(iNum, index);
+		auto X = B + A * w.x;
 
-		i += w.c * f(B + A * w.x);
+		i += w.c * f(X);
 
 
 #ifdef DEEP_DEBUG
@@ -242,43 +243,43 @@ DOUBLE IntegralGaus(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 }
 
 
-DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
-
-#ifdef _DEBUG
-	std::cout << "Integral Gaussian composite function start (param = interval length)" << std::endl;
-#endif // _DEBUG
-
-	// interval length
-	const DOUBLE iLen = p.v;
-
-	// integral calculated value
-	DOUBLE i = 0.0;
-
-
-	for (; a <= b; a += iLen) {
-
-		i += IntegralGaus(f, a, a + iLen, INTERVAL_NUM(_g_weight_table.size-1));
-
-	}
-
-	return i * iLen;
-
-}
-
-
-DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
-
-#ifdef _DEBUG
-	std::cout << "Integral Gaussian composite function start (param = interval number)" << std::endl;
-#endif // _DEBUG
+//DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p) {
+//
+//#ifdef _DEBUG
+//	std::cout << "Integral Gaussian composite function start (param = interval length)" << std::endl;
+//#endif // _DEBUG
+//
+//	// interval length
+//	const DOUBLE iLen = p.v;
+//
+//	// integral calculated value
+//	DOUBLE i = 0.0;
+//
+//
+//	for (; a <= b; a += iLen) {
+//
+//		i += IntegralGaus(f, a, a + iLen, INTERVAL_NUM(_g_weight_table.size-1));
+//
+//	}
+//
+//	return i * iLen;
+//
+//}
 
 
-	// interval length
-	const DOUBLE iLen = (b - a) / p.v;
-
-	return IntegralGauM(f, a, b, INTERVAL_LEN(iLen));
-
-}
+//DOUBLE IntegralGauM(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
+//
+//#ifdef _DEBUG
+//	std::cout << "Integral Gaussian composite function start (param = interval number)" << std::endl;
+//#endif // _DEBUG
+//
+//
+//	// interval length
+//	const DOUBLE iLen = (b - a) / p.v;
+//
+//	return IntegralGauM(f, a, b, INTERVAL_LEN(iLen));
+//
+//}
 
 
 
@@ -298,9 +299,9 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p, integral
 		return IntegralGaus(f, a, b, p);
 	} break;
 
-	case integral_formula::GAUSS_MAX: {
-		return IntegralGauM(f, a, b, p);
-	} break;
+	//case integral_formula::GAUSS_MAX: {
+	//	return IntegralGauM(f, a, b, p);
+	//} break;
 
 	default : {
 		throw UnexpectedIntegralFunction("non - existent intergral formula (check last param)");
@@ -326,15 +327,42 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_LEN p, integral
 		throw UnexpectedIntegralFunction{ "Gaussian type of integral couldn't be calculated using interval legth param" };
 	} break;
 
-	case integral_formula::GAUSS_MAX: {
-		return IntegralGauM(f, a, b, p);
-	} break;
+	//case integral_formula::GAUSS_MAX: {
+	//	return IntegralGauM(f, a, b, p);
+	//} break;
 
 	default: {
 		throw UnexpectedIntegralFunction("non - existent intergral formula (check last param)");
 	}
 
 	}
+
+}
+
+DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, GAUSS_PARAM p, integral_formula v) {
+
+	if (v != integral_formula::GAUSS) {
+		throw UnexpectedIntegralFunction("non - existent intergral formula (check last param)");
+	}
+
+
+	const ULONG i_num = p.i_num.v;
+	const DOUBLE i_len = (b - a) / i_num;
+	const ULONG d_num = p.d_num.v;
+
+	DOUBLE A = a;
+	DOUBLE B = A + i_len;
+
+	// final integral value
+	DOUBLE i = 0.0;
+
+	for (; B <= b; A = B, B += i_len) {
+
+		i += IntegralGaus(f, A, B, p.d_num);
+
+	}
+
+	return i;
 
 }
 
