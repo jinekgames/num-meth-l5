@@ -12,6 +12,7 @@
 
 
 #include <valarray>
+#include <vector>
 
 #include "Integral.h"
 
@@ -122,7 +123,7 @@ DOUBLE IntegralSymp(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
 #endif // _DEBUG
 
 	// interval length
-	const DOUBLE iLen = (b - a) / p.v;
+	const DOUBLE iLen = (b - a) / (p.v - 1.0);
 
 	return IntegralSymp(f, a, b, INTERVAL_LEN(iLen));
 
@@ -139,73 +140,155 @@ struct g_weight_table {
 
 	struct i_vec {
 
-		const std::valarray<g_weigth> i;
+		std::valarray<DOUBLE> i;
 
 	};
 
-	const std::valarray<i_vec> n;
-	const size_t size;
+	std::valarray<i_vec> n;
+	size_t size;
 
 };
 
-const g_weight_table _g_weight_table{
+const g_weight_table _g_weight_table_x{
 
 	{{
 		{{
-			{    0.0,            2.0           }
+			{				  0.0	}
 		}},
 		{{
-			{    -0.5773503,     1.0           },
-			{    0.5773503,      1.0           },
+			{    -sqrt(3.0) / 3.0	},
+			{     sqrt(3.0) / 3.0	},
 		}},
 		{{
-			{    -0.7745967,     0.5555556     },
-			{    0.0,            0.8888889     },
-			{    0.7745967,      0.5555556     },
+			{    -sqrt(15.0) / 5.0	},
+			{				   0.0	},
+			{     sqrt(15.0) / 5.0	},
 		}},
 		{{
-			{    -0.8611363,     0.3478548     },
-			{    -0.3399810,     0.6521451     },
-			{    0.3399810,      0.6521451     },
-			{    0.8611363,      0.3478548     },
+			{    -sqrt(525.0 + 70.0 * sqrt(30.0)) / 35.0	},
+			{    -sqrt(525.0 - 70.0 * sqrt(30.0)) / 35.0	},
+			{     sqrt(525.0 - 70.0 * sqrt(30.0)) / 35.0	},
+			{     sqrt(525.0 + 70.0 * sqrt(30.0)) / 35.0	},
 		}},
 		{{
-			{    -0.9061798,     0.4786287     },
-			{    -0.5384693,     0.2369269     },
-			{    0.0,            0.5688888     },
-			{    0.5384693,      0.2369269     },
-			{    0.9061798,      0.4786287     },
-		}},
-		{{
-			{    -0.9324700,     0.1713245     },
-			{    -0.6612094,     0.3607616     },
-			{    -0.2386142,     0.4679140     },
-			{    0.2386142,      0.4679140     },
-			{    0.6612094,      0.3607616     },
-			{    0.9324700,      0.1713245     },
+			{    -sqrt(245.0 + 14.0 * sqrt(70.0)) / 21.0	},
+			{    -sqrt(245.0 - 14.0 * sqrt(70.0)) / 21.0	},
+			{										 0.0	},
+			{     sqrt(245.0 - 14.0 * sqrt(70.0)) / 21.0	},
+			{     sqrt(245.0 + 14.0 * sqrt(70.0)) / 21.0	},
 		}},
 	}},
 
-	6u
+	5u
 
 };
 
-g_weigth _GetGweigth(size_t n, size_t i) {
+const std::vector< DOUBLE(*)(DOUBLE) > _g_weith_table_poly{
 
-	return _g_weight_table.n[n].i[i];
+	[](DOUBLE x) { return 1.0; },
+	[](DOUBLE x) { return x; },
+	[](DOUBLE x) { return 3.0/2.0 * x*x - 1.0/2.0; },
+	[](DOUBLE x) { return 5.0/2.0 * x*x*x - 3.0/2.0; },
+	[](DOUBLE x) { 
+		return 35.0/8.0 * x*x*x*x - 30.0/8.0 * x*x + 3.0/8.0;
+		//return 2.0 * (1.0 - x*x) / (16 * p*p);
+	},
+	[](DOUBLE x) { return 63.0/8.0 * x*x*x*x*x - 70.0/8.0 * x*x*x + 15.0/8.0 * x; },
 
+};
+
+
+
+/////////////////
+
+double diff(int n, double xk)
+{
+	double diff = 0;
+	switch (n)
+	{
+	case 0:
+	{
+		break;
+	}
+	case 1:
+	{
+		diff = 1;
+		break;
+	}
+	case 2:
+	{
+		diff = 3 * xk;
+		break;
+	}
+	case 3:
+	{
+		diff = (5 * 3 * xk * xk - 3) / 2;
+		break;
+	}
+	case 4:
+	{
+		diff = (35 * 4 * xk * xk * xk - 60 * xk) / 8;
+		break;
+	}
+	case 5:
+	{
+		diff = (63 * 5 * xk * xk * xk * xk - 210 * xk * xk + 15) / 8;
+		break;
+	}
+	default:
+		throw "Wrong n in diff!\n";
+	}
+	return diff;
 }
+
+double weightk(int n, double xk)
+{
+	double tmp = diff(n, xk);
+	return 2.0 / ((1.0 - xk * xk) * tmp * tmp);
+}
+
+double solves[5][5]{ {0,0,0,0,0},{-1.0 / sqrt(3),1.0 / sqrt(3),0,0,0},{-sqrt(0.6),0,sqrt(0.6),0,0},{-sqrt(3.0 / 7 + 2 * sqrt(1.2) / 7),-sqrt(3.0 / 7 - 2 * sqrt(1.2) / 7),sqrt(3.0 / 7 - 2 * sqrt(1.2) / 7),sqrt(3.0 / 7 + 2 * sqrt(1.2) / 7),0},{-sqrt(5 + 2 * sqrt(10.0 / 7)) / 3,-sqrt(5 - 2 * sqrt(10.0 / 7)) / 3,0,sqrt(5 - 2 * sqrt(10.0 / 7)) / 3,sqrt(5 + 2 * sqrt(10.0 / 7)) / 3} };
+
+/////////////////
+
+
+
 g_weigth s_GetGweigth(size_t n, size_t i) {
 
-	if (n >= _g_weight_table.size) {
+	if (n > _g_weight_table_x.size) {
 		throw "Integral.cpp Integral_jnk::g_weigth Integral_jnk::s_GetGweigth(size_t, size_t) error: i > table size";
 	}
 	if (i > n) {
 		throw "Integral.cpp Integral_jnk::g_weigth Integral_jnk::s_GetGweigth(size_t, size_t) error: i > n limit";
 	}
-	return _g_weight_table.n[n-1].i[i-1];
+
+	return {
+		_g_weight_table_x.n[n - 1].i[i - 1],
+		weightk(n, solves[n-1][i-1])
+	};
+
+
+	//if (n < 4) {
+	//	return {
+	//		weigth_x,
+	//		2.0 * (1.0 - weigth_x * weigth_x) / (n * n * jnkMath::degree(_g_weith_table_poly[n - 1](weigth_x), 2))
+	//	};
+	//}
+	//
+	//{
+	//	if (n == 4) {
+	//		if (i == 1 || i == 4) return { weigth_x, 0.3478548451 };
+	//		else			 return { weigth_x, 0.6521451559 };
+	//	}
+	//	if (n == 5) {
+	//		if (i == 1 || i == 5) return { weigth_x, 0.2369268851 };
+	//		if (i == 2 || i == 4) return { weigth_x, 0.4786286705 };
+	//		else			 return { weigth_x, 0.568888888888889 };
+	//	}
+	//}
 
 }
+
 
 
 DOUBLE IntegralGaus(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, INTERVAL_NUM p) {
@@ -369,3 +452,28 @@ DOUBLE Integral(DOUBLE(*f)(DOUBLE), DOUBLE a, DOUBLE b, GAUSS_PARAM p, integral_
 
 
 }
+
+
+//#include <iostream>
+//#include "conio.h"
+//using namespace std;
+//using namespace Integral_jnk;
+//void main() {
+//
+//	for (size_t i = 1u; i <= 5u; i++) {
+//
+//		for (size_t j = 1u; j <= i; j++) {
+//
+//			auto t = s_GetGweigth(i, j);
+//
+//			cout << t.c << "\t" << t.x << endl;
+//
+//		}
+//		
+//		cout << endl;
+//
+//	}
+//
+//	_getch();
+//
+//}

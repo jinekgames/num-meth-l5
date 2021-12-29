@@ -43,14 +43,6 @@ using namespace Integral_jnk;
 int main() {
 
 
-	//std::cout << Integral(
-	//	[](DOUBLE x) { return x * x * x; },
-	//	0, 10,
-	//	INTERVAL_NUM(1000),
-	//	SYMPSON
-	//) << std::endl;
-
-
 #ifdef PART_1
 
 	// std::cout << Integral(f, 1, 2, INTERVAL_NUM(1)) << std::endl;
@@ -200,31 +192,34 @@ int main() {
 
 	std::cout << "\n\n-----Gaussian formula------\n\n\n";
 
-	// number of dots on ech gauss interval
-	const USHORT dotsNum = 3u;
-	std::cout << "Number of dots on interval: " << dotsNum << "\n\n";
+	// number of intervals
+	const USHORT intsNum = 1u;
+
+	size_t index = 0u;
 
 	for (const auto& function : funcs) {
+
 		std::cout << "\tnext function\n\n";
-		DOUBLE m = 1.0;
+
 		for (auto n : N) {
 
 			auto i = Integral(
 				function.f,
 				function.a, function.b,
-				GAUSS_PARAM(n, dotsNum),
+				GAUSS_PARAM(intsNum, n),
 				GAUSS
 			);
 
 			std::cout << "h = " << n << std::endl;
-			std::cout << " I = " << function.precalculated << std::endl;
-			std::cout << " Ih = " << i << std::endl;
+			std::cout << " I   = " << function.precalculated << std::endl;
+			std::cout << " Ih  = " << i << std::endl;
 			std::cout << " del = " << abs(function.precalculated - i) << std::endl;
-
-			m *= 2.0;
+			std::cout << " Rn  = " << RN_FOR_GAUSS(function.a, function.b, n, funcs_ders[index][2*n - 1]) << std::endl;
 
 		}
 		std::cout << std::endl << std::endl;
+
+		index++;
 	}
 
 

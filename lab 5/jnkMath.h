@@ -3,6 +3,11 @@
 //
 // some math functions
 
+#pragma once
+
+#ifndef __JNKMATH_H__
+#define __JNKMATH_H__
+
 
 
 #include <windows.h>
@@ -30,3 +35,7 @@ namespace jnkMath {
 	DOUBLE Grad2Rad(DOUBLE phi);
 
 }
+
+
+
+#endif // __JNKMATH_H__

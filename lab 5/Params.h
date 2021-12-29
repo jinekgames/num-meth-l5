@@ -19,12 +19,15 @@
 
 
 #include <Windows.h>
+
 #include <vector>
+
 #include <math.h>
 #include "jnkMath.h"
 
+using namespace jnkMath;
 
-#define PART_11
+
 #define PART_3
 
 
@@ -107,7 +110,7 @@ const std::vector<data2solve> functions{
 
 #ifdef PART_3
 
-#define L 9
+#define L 9.0
 
 std::vector<data2solve> funcs{
 	{
@@ -122,7 +125,43 @@ std::vector<data2solve> funcs{
 	},
 };
 
-std::vector<size_t> N{ 1u, 2, 3, 4, 5, 10, 100 };
+std::vector<std::vector< DOUBLE(*)(DOUBLE) >> funcs_ders{
+
+	{
+		[](DOUBLE x) { return	7.0    * jnkMath::degree((x - L), 6); },
+		[](DOUBLE x) { return	42.0   * jnkMath::degree((x - L), 5); },
+		[](DOUBLE x) { return	210.0  * jnkMath::degree((x - L), 4); },
+		[](DOUBLE x) { return	840.0  * jnkMath::degree((x - L), 3); },
+		[](DOUBLE x) { return	2520.0 * jnkMath::degree((x - L), 2); },
+		[](DOUBLE x) { return	5040.0 * (x - L);					  },
+		[](DOUBLE x) { return	5040.0 * 1.0;						  },
+		[](DOUBLE x) { return	0.0;								  },
+		[](DOUBLE x) { return	0.0;								  },
+		[](DOUBLE x) { return	0.0;								  },
+	},
+
+	{
+		[](DOUBLE x) { return	L + 10.0      * jnkMath::degree((x - L), 9); },
+		[](DOUBLE x) { return		90.0	  * jnkMath::degree((x - L), 8); },
+		[](DOUBLE x) { return		720.0	  * jnkMath::degree((x - L), 7); },
+		[](DOUBLE x) { return		5040.0	  * jnkMath::degree((x - L), 6); },
+		[](DOUBLE x) { return		30240.0	  * jnkMath::degree((x - L), 5); },
+		[](DOUBLE x) { return		151200.0  * jnkMath::degree((x - L), 4); },
+		[](DOUBLE x) { return		604800.0  * jnkMath::degree((x - L), 3); },
+		[](DOUBLE x) { return		1814400.0 * jnkMath::degree((x - L), 2); },
+		[](DOUBLE x) { return		3628800.0 * (x - L);					 },
+		[](DOUBLE x) { return		3628800.0 * 1.0;						 },
+	},
+
+};
+
+#define RN_FOR_GAUSS(a, b, n, f_2n)																			\
+	f_2n(b) * pow(b - a, 2*n + 1) * pow(factorial(n), 4) / (2*n + 1) / pow(factorial(2*n), 3)
+
+//jnkMath::degree((b-a), 2*n + 1) * jnkMath::degree(jnkMath::factorial(n), 4) * f_2n((b-a)/2) /			\
+	//jnkMath::degree(jnkMath::factorial(2*n), 3) * (2*n + 1)
+
+std::vector<size_t> N{ 1u, 2, 3, 4, 5, };
 
 
 #define M_MAX_DEG 4u

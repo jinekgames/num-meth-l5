@@ -33,6 +33,10 @@
 
 
 #include <Windows.h>
+
+#include <math.h>
+#include "jnkMath.h"
+
 #include <string>
 
 
